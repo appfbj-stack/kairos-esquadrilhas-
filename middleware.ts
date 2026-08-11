@@ -1,5 +1,8 @@
-import { auth } from '@/lib/auth/config';
+import NextAuth from 'next-auth';
 import { NextResponse } from 'next/server';
+import { authConfigEdge } from '@/lib/auth/edge';
+
+const { auth } = NextAuth(authConfigEdge);
 
 export default auth((req) => {
   const { nextUrl } = req;
@@ -14,7 +17,6 @@ export default auth((req) => {
     nextUrl.pathname.startsWith('/favicon');
 
   if (isPublic) {
-    // Se ja esta logado e vai pra /login, manda pro dashboard.
     if (isLoggedIn && nextUrl.pathname.startsWith('/login')) {
       return NextResponse.redirect(new URL('/dashboard', nextUrl));
     }

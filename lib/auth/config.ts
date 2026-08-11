@@ -1,10 +1,11 @@
-import NextAuth, { type DefaultSession, type NextAuthConfig } from 'next-auth';
+import NextAuth, { type DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
 import { db } from '../db';
 import { users, tenants } from '../db/schema';
 import { eq, and } from 'drizzle-orm';
 import { verifyPassword } from './password';
+import { authConfigEdge } from './edge';
 
 declare module 'next-auth' {
   interface Session {
@@ -37,12 +38,13 @@ const demoSchema = z.object({
 
 const demoEnabled = process.env.ENABLE_DEMO_MODE === 'true';
 
-export const authConfig: NextAuthConfig = {
-  session: { strategy: 'jwt' },
-  pages: {
-    signIn: '/login',
-  },
-  trustHost: true,
+/**
+ * Config COMPLETA do NextAuth (Node runtime).
+ * Importada apenas em API routes, server actions, e route handlers.
+ * Para o middleware (Edge), use ./edge.ts.
+ */
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfigEdge,
   providers: [
     Credentials({
       id: 'credentials',
@@ -132,44 +134,4 @@ export const authConfig: NextAuthConfig = {
         ]
       : []),
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        const u = user as { id: string; tenantId: string; role: 'admin' | 'vendedor' | 'producao'; isDemo: boolean };
-        token.uid = u.id;
-        token.tenantId = u.tenantId;
-        token.role = u.role;
-        token.isDemo = u.isDemo;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (token.uid) {
-        session.user.id = token.uid;
-        session.user.tenantId = token.tenantId!;
-        session.user.role = token.role!;
-        session.user.isDemo = token.isDemo ?? false;
-      }
-      return session;
-    },
-    authorized({ auth, request }) {
-      const isLoggedIn = !!auth?.user;
-      const { pathname } = request.nextUrl;
-
-      // Rotas publicas
-      if (
-        pathname === '/' ||
-        pathname.startsWith('/login') ||
-        pathname.startsWith('/api/auth') ||
-        pathname.startsWith('/api/files')
-      ) {
-        return true;
-      }
-
-      // Tudo o resto exige auth
-      return isLoggedIn;
-    },
-  },
-};
-
-export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);
+});
