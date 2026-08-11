@@ -2,7 +2,7 @@
   "name": "kairos-esquadrias",
   "version": "0.1.0",
   "private": true,
-  "description": "Kairos Esquadrias 3D - SaaS para vendedores de esquadrias com visualizacao 3D e geracao de propostas em PDF.",
+  "description": "Kairos Esquadrilhas 3D - SaaS para vendedores de esquadrias com visualizacao 3D e geracao de propostas em PDF.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

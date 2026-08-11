@@ -24,7 +24,7 @@ export default async function OnboardingPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Bem-vindo!</h1>
         <p className="text-sm text-muted-foreground">
-          Configure sua empresa para comecar a usar o Kairos Esquadrias 3D.
+          Configure sua empresa para comecar a usar o Kairos Esquadrilhas 3D.
         </p>
       </div>
       <OnboardingForm />

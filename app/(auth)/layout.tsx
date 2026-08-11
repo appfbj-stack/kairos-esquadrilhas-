@@ -7,7 +7,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <Logo size="lg" />
         <div className="w-full max-w-md">{children}</div>
         <p className="text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Kairos Esquadrias 3D
+          © {new Date().getFullYear()} Kairos Esquadrilhas 3D
         </p>
       </div>
     </main>

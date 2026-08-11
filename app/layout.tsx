@@ -3,8 +3,8 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Kairos Esquadrias 3D',
-    template: '%s | Kairos Esquadrias 3D',
+    default: 'Kairos Esquadrilhas 3D',
+    template: '%s | Kairos Esquadrilhas 3D',
   },
   description: 'Plataforma SaaS para vendedores de esquadrias com visualizacao 3D e geracao de propostas em PDF.',
   manifest: '/manifest.json',

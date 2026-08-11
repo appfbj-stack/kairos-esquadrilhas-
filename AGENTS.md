@@ -1,10 +1,13 @@
-# AGENTS.md — Kairos Esquadrias 3D
+# AGENTS.md — Kairos Esquadrilhas 3D
 
 Guia para agentes de IA (ou humanos) que vao trabalhar neste repositorio.
 
 ## Visao geral
 
 Plataforma SaaS para empresas de esquadrias (alumínio/vidro) onde o vendedor tira foto do ambiente, configura o produto, ve 3D, calcula preco e gera proposta em PDF. Stack: Next.js 14, TypeScript, Tailwind, shadcn/ui, Postgres, Drizzle, NextAuth v5, R3F/Three.js, Dokploy.
+
+**Nome do produto:** Kairos Esquadrilhas 3D
+**Subdominio oficial:** `esquadrilhas.fbautomacao.space`
 
 ## Regras de desenvolvimento
 

@@ -1,6 +1,8 @@
-# Kairos Esquadrias 3D
+# Kairos Esquadrilhas 3D
 
 Plataforma SaaS para empresas de esquadrias (alumínio/vidro). Vendedor tira foto do ambiente, configura o produto, ve em 3D, calcula preco e gera proposta em PDF — tudo no celular, sem treinamento.
+
+**Subdominio oficial:** `esquadrilhas.fbautomacao.space`
 
 Este repositorio contem a **Sprint 0** (fundacao): login, multi-tenant, dashboard vazio, modo demo e estrutura base para as proximas sprints.
 

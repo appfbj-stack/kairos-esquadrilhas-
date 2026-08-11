@@ -18,7 +18,7 @@ export function Logo({ className, size = 'md' }: { className?: string; size?: 's
         <span className={cn('font-semibold', size === 'sm' ? 'text-sm' : size === 'md' ? 'text-base' : 'text-lg')}>
           Kairos
         </span>
-        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Esquadrias 3D</span>
+        <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Esquadrilhas 3D</span>
       </div>
     </div>
   );
