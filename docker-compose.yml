@@ -50,7 +50,7 @@ services:
       - dokploy-network
     # No Dokploy, o trafego externo chega via Caddy/Traefik; mantenha 3000 exposto para o proxy.
     ports:
-      - '3000:3000'
+      - '3013:3000'
 
 volumes:
   postgres_data:
