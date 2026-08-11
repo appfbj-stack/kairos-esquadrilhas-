@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { db, pool } from './index';
 import { tenants, users, colors, glasses, accessories, products, productModels, priceRules } from './schema';
 import { hashPassword } from '../auth/password';
