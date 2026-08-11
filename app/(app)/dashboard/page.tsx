@@ -2,13 +2,21 @@ import Link from 'next/link';
 import { auth } from '@/lib/auth/config';
 import { db } from '@/lib/db';
 import { tenants, projects, quotes } from '@/lib/db/schema';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, FolderOpen, FileText, Users, Package, Settings, Bot } from 'lucide-react';
+import { Plus, FolderOpen, FileText, Users, Package, Settings, Bot, Sparkles } from 'lucide-react';
 import { formatBRL } from '@/lib/utils';
 
 export const metadata = { title: 'Dashboard' };
+
+type CardItem = {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  href?: string;
+  desc: string;
+  sprint: string;
+};
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -41,12 +49,14 @@ export default async function DashboardPage() {
   const totalSold = allQuotes.reduce((acc, q) => acc + Number(q.total ?? 0), 0);
   const pendingQuotes = allQuotes.length;
 
-  const cards = [
-    { title: 'Meus Projetos', icon: FolderOpen, href: '/projetos', desc: 'Ver todos os projetos' },
-    { title: 'Orcamentos', icon: FileText, href: '/orcamentos', desc: `${pendingQuotes} orcamentos` },
-    { title: 'Clientes', icon: Users, href: '/clientes', desc: 'Sua base de clientes' },
-    { title: 'Catalogo', icon: Package, href: '/catalogo', desc: 'Produtos e precos' },
-    { title: 'Configuracoes', icon: Settings, href: '/configuracoes', desc: 'Empresa e equipe' },
+  // Sprint 0: cards mostram "em breve" ao inves de levar a 404.
+  // Quando a sprint correspondente entregar, adicione `href` no card.
+  const cards: CardItem[] = [
+    { title: 'Meus Projetos', icon: FolderOpen, desc: 'Listagem de projetos', sprint: 'Sprint 1' },
+    { title: 'Orcamentos', icon: FileText, desc: `${pendingQuotes} orcamentos`, sprint: 'Sprint 7' },
+    { title: 'Clientes', icon: Users, desc: 'Base de clientes', sprint: 'Sprint 1' },
+    { title: 'Catalogo', icon: Package, desc: 'Produtos e precos', sprint: 'Sprint 2' },
+    { title: 'Configuracoes', icon: Settings, desc: 'Empresa e equipe', sprint: 'Sprint 0+' },
   ];
 
   return (
@@ -95,21 +105,31 @@ export default async function DashboardPage() {
       </Link>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map((c) => (
-          <Link key={c.href} href={c.href}>
-            <Card className="transition-colors hover:bg-accent">
-              <CardContent className="flex items-center gap-4 p-5">
+        {cards.map((c) => {
+          const Icon = c.icon;
+          const inner = (
+            <Card className="h-full transition-colors hover:bg-accent">
+              <CardContent className="flex h-full items-center gap-4 p-5">
                 <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
-                  <c.icon className="h-6 w-6" />
+                  <Icon className="h-6 w-6" />
                 </div>
-                <div>
-                  <p className="font-semibold">{c.title}</p>
-                  <p className="text-xs text-muted-foreground">{c.desc}</p>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold">{c.title}</p>
+                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-900">
+                      {c.sprint}
+                    </span>
+                  </div>
+                  <p className="truncate text-xs text-muted-foreground">{c.desc}</p>
                 </div>
               </CardContent>
             </Card>
-          </Link>
-        ))}
+          );
+          if (c.href) {
+            return <Link key={c.title} href={c.href}>{inner}</Link>;
+          }
+          return <div key={c.title}>{inner}</div>;
+        })}
       </div>
 
       <Card>
@@ -118,9 +138,15 @@ export default async function DashboardPage() {
         </CardHeader>
         <CardContent>
           {recentProjects.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Nenhum projeto ainda. Clique em <strong>NOVO PROJETO</strong> para comecar.
-            </p>
+            <div className="flex flex-col items-center gap-3 py-6 text-center">
+              <Sparkles className="h-8 w-8 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                Nenhum projeto ainda. Em breve o botao <strong>NOVO PROJETO</strong> te leva pelo wizard completo.
+              </p>
+              <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium uppercase tracking-wide text-amber-900">
+                Sprint 3-4
+              </span>
+            </div>
           ) : (
             <ul className="divide-y">
               {recentProjects.map((p) => (
