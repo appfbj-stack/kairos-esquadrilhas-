@@ -45,6 +45,17 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 RUN mkdir -p /app/uploads && chown -R nextjs:nodejs /app/uploads
 VOLUME ["/app/uploads"]
 
+# Instala pnpm e tsx globalmente para migrations/seed em runtime
+RUN corepack enable && corepack prepare pnpm@10.22.0 --activate && \
+    npm install -g tsx@4.19.2
+
+# Copia codigo-fonte e node_modules completos para permitir
+# rodar `pnpm db:migrate` e `pnpm db:seed` em runtime
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/lib ./lib
+COPY --from=builder --chown=nextjs:nodejs /app/drizzle.config.ts ./drizzle.config.ts
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+
 USER nextjs
 EXPOSE 3000
 
