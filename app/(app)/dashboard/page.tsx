@@ -52,9 +52,9 @@ export default async function DashboardPage() {
   // Cards que ja tem pagina recebem href. Os demais continuam com badge "Em breve".
   const cards: CardItem[] = [
     { title: 'Clientes', icon: Users, href: '/clientes', desc: 'Base de clientes', sprint: 'Pronto' },
+    { title: 'Meus Projetos', icon: FolderOpen, href: '/projetos', desc: 'Projetos e orcamentos', sprint: 'Pronto' },
     { title: 'Demo 3D', icon: Sparkles, href: '/demo-3d', desc: 'Todos os produtos em 3D', sprint: 'Pronto' },
-    { title: 'Meus Projetos', icon: FolderOpen, desc: 'Listagem de projetos', sprint: 'Sprint 3' },
-    { title: 'Orcamentos', icon: FileText, desc: `${pendingQuotes} orcamentos`, sprint: 'Sprint 7' },
+    { title: 'Orcamentos', icon: FileText, desc: `${pendingQuotes} orcamentos`, sprint: 'Sprint 7+' },
     { title: 'Catalogo', icon: Package, desc: 'Produtos e precos', sprint: 'Sprint 2' },
     { title: 'Configuracoes', icon: Settings, desc: 'Empresa e equipe', sprint: 'Sprint 0+' },
   ];
