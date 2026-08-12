@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import type { WizardData } from '../wizard';
 
-type Customer = { id: string; name: string; phone?: string | null; whatsapp?: string | null };
+type Customer = { id: string; name: string; phone?: string | null; whatsapp?: string | null; email?: string | null };
 
 export function Step1Customer({
   data,
