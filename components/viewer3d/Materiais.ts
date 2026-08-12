@@ -47,4 +47,9 @@ export const Glasses = {
   verde: { color: '#7fa68a', transmission: 0.7 },
   bronze: { color: '#a88060', transmission: 0.55 },
   temperado: { color: '#cfeefb', transmission: 0.88 },
+  reflectivo: { color: '#9ca3af', transmission: 0.4 },
+  laminado: { color: '#dbeafe', transmission: 0.7 },
 };
+
+export type ColorKey = keyof typeof Colors;
+export type GlassKey = keyof typeof Glasses;
