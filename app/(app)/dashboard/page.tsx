@@ -49,12 +49,11 @@ export default async function DashboardPage() {
   const totalSold = allQuotes.reduce((acc, q) => acc + Number(q.total ?? 0), 0);
   const pendingQuotes = allQuotes.length;
 
-  // Sprint 0: cards mostram "em breve" ao inves de levar a 404.
-  // Quando a sprint correspondente entregar, adicione `href` no card.
+  // Cards que ja tem pagina recebem href. Os demais continuam com badge "Em breve".
   const cards: CardItem[] = [
-    { title: 'Meus Projetos', icon: FolderOpen, desc: 'Listagem de projetos', sprint: 'Sprint 1' },
+    { title: 'Clientes', icon: Users, href: '/clientes', desc: 'Base de clientes', sprint: 'Pronto' },
+    { title: 'Meus Projetos', icon: FolderOpen, desc: 'Listagem de projetos', sprint: 'Sprint 3' },
     { title: 'Orcamentos', icon: FileText, desc: `${pendingQuotes} orcamentos`, sprint: 'Sprint 7' },
-    { title: 'Clientes', icon: Users, desc: 'Base de clientes', sprint: 'Sprint 1' },
     { title: 'Catalogo', icon: Package, desc: 'Produtos e precos', sprint: 'Sprint 2' },
     { title: 'Configuracoes', icon: Settings, desc: 'Empresa e equipe', sprint: 'Sprint 0+' },
   ];
@@ -107,6 +106,10 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {cards.map((c) => {
           const Icon = c.icon;
+          const isReady = c.sprint === 'Pronto';
+          const badgeClass = isReady
+            ? 'bg-green-100 text-green-900'
+            : 'bg-amber-100 text-amber-900';
           const inner = (
             <Card className="h-full transition-colors hover:bg-accent">
               <CardContent className="flex h-full items-center gap-4 p-5">
@@ -116,7 +119,7 @@ export default async function DashboardPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <p className="font-semibold">{c.title}</p>
-                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-amber-900">
+                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${badgeClass}`}>
                       {c.sprint}
                     </span>
                   </div>
