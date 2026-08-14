@@ -174,7 +174,19 @@ export async function getOrCreateQuote(projectId: string) {
     depthMm: proj.depthMm,
     modules: proj.modulesCount,
     leaves: proj.leavesCount,
-    rule,
+    rule: rule
+      ? {
+          ruleType: rule.ruleType,
+          basePrice: rule.basePrice,
+          glassPricePerM2: rule.glassPricePerM2,
+          hardwareCost: rule.hardwareCost,
+          laborCost: rule.laborCost,
+          installationCost: rule.installationCost,
+          wastePercent: rule.wastePercent,
+          marginPercent: rule.marginPercent,
+          extras: (rule.extras as Record<string, any> | null) ?? null,
+        }
+      : null,
   });
 
   // Verifica se ja tem quote

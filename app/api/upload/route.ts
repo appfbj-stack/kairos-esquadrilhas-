@@ -48,7 +48,7 @@ export async function POST(req: Request) {
   const existing = await db
     .select({ id: projectPhotos.id })
     .from(projectPhotos)
-    .where(projectPhotos.projectId === projectId);
+    .where(eq(projectPhotos.projectId, projectId));
 
   const [created] = await db
     .insert(projectPhotos)

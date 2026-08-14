@@ -36,6 +36,7 @@ type Photo = { id: string; url: string; kind: string; position: number };
 
 type RefItem = { id: string; name: string; [k: string]: any };
 type ProductRef = { id: string; name: string; category: string };
+type ModelRef = { id: string; name: string; defaultLeaves: number | null };
 
 const STEPS = [
   { num: 1, label: 'Cliente', short: 'Cliente' },
@@ -60,7 +61,7 @@ export function Wizard({
   photos: Photo[];
   customers: RefItem[];
   products: ProductRef[];
-  models: RefItem[];
+  models: ModelRef[];
   colors: RefItem[];
   glasses: RefItem[];
   accessories: RefItem[];
@@ -69,7 +70,7 @@ export function Wizard({
   const [step, setStep] = useState(1);
   const [data, setData] = useState<WizardData>(project);
   const [currentPhotos, setCurrentPhotos] = useState<Photo[]>(photos);
-  const [currentModels, setCurrentModels] = useState<RefItem[]>(models);
+  const [currentModels, setCurrentModels] = useState<ModelRef[]>(models);
   const [isPending, startTransition] = useTransition();
 
   function patch(partial: Partial<WizardData>) {

@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { listProjects } from '@/lib/actions/projects';
 import { db } from '@/lib/db';
 import { customers } from '@/lib/db/schema';
-import { eq, inArray } from 'drizzle-orm';
+import { eq, inArray, and } from 'drizzle-orm';
 import { requireTenantContext } from '@/lib/tenant/context';
 import { formatBRL } from '@/lib/utils';
 
