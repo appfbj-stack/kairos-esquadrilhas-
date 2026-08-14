@@ -35,6 +35,7 @@ export type WizardData = {
 type Photo = { id: string; url: string; kind: string; position: number };
 
 type RefItem = { id: string; name: string; [k: string]: any };
+type ProductRef = { id: string; name: string; category: string };
 
 const STEPS = [
   { num: 1, label: 'Cliente', short: 'Cliente' },
@@ -58,7 +59,7 @@ export function Wizard({
   project: WizardData;
   photos: Photo[];
   customers: RefItem[];
-  products: RefItem[];
+  products: ProductRef[];
   models: RefItem[];
   colors: RefItem[];
   glasses: RefItem[];
