@@ -109,7 +109,7 @@ export default async function DashboardPage() {
           const Icon = c.icon;
           const isReady = c.sprint === 'Pronto';
           const badgeClass = isReady
-            ? 'bg-green-100 text-green-900'
+            ? 'bg-orange-100 text-orange-900'
             : 'bg-amber-100 text-amber-900';
           const inner = (
             <Card className="h-full transition-colors hover:bg-accent">
