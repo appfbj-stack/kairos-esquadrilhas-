@@ -6,14 +6,14 @@ import { auth } from '@/lib/auth/config';
 
 export async function GET(req: Request) {
   const session = await auth();
-  console.log('[api/product-models] session:', session?.user?.email, 'tenant:', session?.user?.tenantId);
+  console.error('[api/product-models] session:', session?.user?.email, 'tenant:', session?.user?.tenantId);
   if (!session?.user?.tenantId) {
     return NextResponse.json({ error: 'Nao autenticado' }, { status: 401 });
   }
 
   const { searchParams } = new URL(req.url);
   const productId = searchParams.get('productId');
-  console.log('[api/product-models] productId:', productId);
+  console.error('[api/product-models] productId:', productId);
   if (!productId) {
     return NextResponse.json({ error: 'productId obrigatorio' }, { status: 400 });
   }
@@ -24,7 +24,7 @@ export async function GET(req: Request) {
     .where(
       and(eq(productModels.productId, productId), eq(productModels.tenantId, session.user.tenantId))
     );
-  console.log('[api/product-models] rows count:', rows.length);
+  console.error('[api/product-models] rows count:', rows.length);
 
   return NextResponse.json(rows);
 }
