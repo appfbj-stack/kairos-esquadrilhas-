@@ -101,10 +101,19 @@ export function Wizard({
         });
         if (extra?.productId && extra.productId !== data.productId) {
           // Recarrega modelos se mudou produto
-          const res = await fetch(`/api/product-models?productId=${extra.productId}`);
-          if (res.ok) {
-            const rows = await res.json();
-            setCurrentModels(rows);
+          try {
+            const res = await fetch(`/api/product-models?productId=${extra.productId}`);
+            console.log('[wizard] product-models fetch:', res.status, res.url);
+            if (res.ok) {
+              const rows = await res.json();
+              console.log('[wizard] product-models rows:', rows.length);
+              setCurrentModels(rows);
+            } else {
+              const errText = await res.text();
+              console.error('[wizard] product-models error body:', errText);
+            }
+          } catch (fetchErr: any) {
+            console.error('[wizard] product-models fetch failed:', fetchErr?.message);
           }
         }
         setStep(nextStep);
