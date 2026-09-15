@@ -72,50 +72,90 @@ export function Wizard({
   const [currentPhotos, setCurrentPhotos] = useState<Photo[]>(photos);
   const [currentModels, setCurrentModels] = useState<ModelRef[]>(models);
   const [isPending, startTransition] = useTransition();
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   function patch(partial: Partial<WizardData>) {
     setData((d) => ({ ...d, ...partial }));
+    setErrorMsg(null);
   }
 
   function saveAndAdvance(nextStep: number, extra?: Partial<WizardData>) {
     const merged = { ...data, ...extra };
     setData(merged);
+    setErrorMsg(null);
     startTransition(async () => {
-      await updateProject({
-        id: merged.id,
-        customerId: merged.customerId,
-        productId: merged.productId,
-        modelId: merged.modelId,
-        widthMm: merged.widthMm,
-        heightMm: merged.heightMm,
-        depthMm: merged.depthMm,
-        modulesCount: merged.modulesCount,
-        leavesCount: merged.leavesCount,
-        colorId: merged.colorId,
-        glassId: merged.glassId,
-        opening: merged.opening,
-      });
-      if (extra?.productId && extra.productId !== data.productId) {
-        // Recarrega modelos se mudou produto
-        const res = await fetch(`/api/product-models?productId=${extra.productId}`);
-        if (res.ok) {
-          const rows = await res.json();
-          setCurrentModels(rows);
+      try {
+        await updateProject({
+          id: merged.id,
+          customerId: merged.customerId,
+          productId: merged.productId,
+          modelId: merged.modelId,
+          widthMm: merged.widthMm,
+          heightMm: merged.heightMm,
+          depthMm: merged.depthMm,
+          modulesCount: merged.modulesCount,
+          leavesCount: merged.leavesCount,
+          colorId: merged.colorId,
+          glassId: merged.glassId,
+          opening: merged.opening,
+        });
+        if (extra?.productId && extra.productId !== data.productId) {
+          // Recarrega modelos se mudou produto
+          const res = await fetch(`/api/product-models?productId=${extra.productId}`);
+          if (res.ok) {
+            const rows = await res.json();
+            setCurrentModels(rows);
+          }
         }
+        setStep(nextStep);
+      } catch (err: any) {
+        console.error('[wizard] saveAndAdvance failed', err);
+        setErrorMsg(err?.message || 'Falha ao salvar passo. Tente novamente.');
       }
-      setStep(nextStep);
     });
   }
 
   function goBack() {
     if (step === 1) return;
     setStep(step - 1);
+    setErrorMsg(null);
   }
 
   function finish() {
+    // Validacao previa: precisa ter cliente, produto, modelo e medidas
+    const missing: string[] = [];
+    if (!data.customerId) missing.push('cliente');
+    if (!data.productId) missing.push('produto');
+    if (!data.modelId) missing.push('modelo');
+    if (!data.widthMm || !data.heightMm) missing.push('medidas (largura/altura)');
+    if (missing.length > 0) {
+      setErrorMsg(`Faltam dados para finalizar: ${missing.join(', ')}. Volte e preencha.`);
+      return;
+    }
+    setErrorMsg(null);
     startTransition(async () => {
-      await updateProject({ id: data.id, status: 'orcamento' });
-      router.push(`/projetos/${data.id}`);
+      try {
+        const res = await updateProject({
+          id: data.id,
+          customerId: data.customerId,
+          productId: data.productId,
+          modelId: data.modelId,
+          widthMm: data.widthMm,
+          heightMm: data.heightMm,
+          depthMm: data.depthMm,
+          modulesCount: data.modulesCount,
+          leavesCount: data.leavesCount,
+          colorId: data.colorId,
+          glassId: data.glassId,
+          opening: data.opening,
+          status: 'orcamento',
+        });
+        // Aguarda o router.push só depois do server confirmar
+        router.push(`/projetos/${data.id}`);
+      } catch (err: any) {
+        console.error('[wizard] finish failed', err);
+        setErrorMsg(err?.message || 'Erro ao finalizar projeto. Tente novamente.');
+      }
     });
   }
 
@@ -165,6 +205,15 @@ export function Wizard({
 
       <Card>
         <CardContent className="p-4 sm:p-6">
+          {errorMsg && (
+            <div
+              role="alert"
+              className="mb-4 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-900"
+            >
+              <strong className="block font-semibold">Erro</strong>
+              <span>{errorMsg}</span>
+            </div>
+          )}
           {step === 1 && (
             <Step1Customer
               data={data}

@@ -51,47 +51,52 @@ const updateSchema = z.object({
 
 export async function updateProject(input: z.input<typeof updateSchema>) {
   const ctx = await requireTenantContext();
-  const parsed = updateSchema.parse(input);
+  const parsed = updateSchema.safeParse(input);
+  if (!parsed.success) {
+    const issues = parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
+    throw new Error(`Dados invalidos: ${issues}`);
+  }
+  const data = parsed.data;
 
   // Verifica que o projeto pertence ao tenant
   const [owned] = await db
     .select({ id: projects.id })
     .from(projects)
-    .where(and(eq(projects.id, parsed.id), eq(projects.tenantId, ctx.tenantId)))
+    .where(and(eq(projects.id, data.id), eq(projects.tenantId, ctx.tenantId)))
     .limit(1);
-  if (!owned) throw new Error('Projeto nao encontrado');
+  if (!owned) throw new Error('Projeto nao encontrado ou sem permissao');
 
   // Se tem produto/modelo, atualiza titulo default
-  let title = parsed.title;
+  let title = data.title;
   if (!title) {
-    const [proj] = await db.select().from(projects).where(eq(projects.id, parsed.id)).limit(1);
+    const [proj] = await db.select().from(projects).where(eq(projects.id, data.id)).limit(1);
     title = proj?.title;
   }
 
   await db
     .update(projects)
     .set({
-      customerId: parsed.customerId ?? null,
-      productId: parsed.productId ?? null,
-      modelId: parsed.modelId ?? null,
+      customerId: data.customerId ?? null,
+      productId: data.productId ?? null,
+      modelId: data.modelId ?? null,
       title: title ?? 'Novo projeto',
-      widthMm: parsed.widthMm ?? null,
-      heightMm: parsed.heightMm ?? null,
-      depthMm: parsed.depthMm ?? null,
-      modulesCount: parsed.modulesCount ?? null,
-      leavesCount: parsed.leavesCount ?? null,
-      colorId: parsed.colorId ?? null,
-      glassId: parsed.glassId ?? null,
-      opening: parsed.opening ?? null,
-      notes: parsed.notes ?? null,
-      status: parsed.status ?? 'rascunho',
+      widthMm: data.widthMm ?? null,
+      heightMm: data.heightMm ?? null,
+      depthMm: data.depthMm ?? null,
+      modulesCount: data.modulesCount ?? null,
+      leavesCount: data.leavesCount ?? null,
+      colorId: data.colorId ?? null,
+      glassId: data.glassId ?? null,
+      opening: data.opening ?? null,
+      notes: data.notes ?? null,
+      status: data.status ?? 'rascunho',
       updatedAt: new Date(),
     })
-    .where(eq(projects.id, parsed.id));
+    .where(eq(projects.id, data.id));
 
-  revalidatePath(`/projetos/${parsed.id}`);
+  revalidatePath(`/projetos/${data.id}`);
   revalidatePath('/projetos');
-  return { ok: true };
+  return { ok: true, id: data.id };
 }
 
 export async function getProject(id: string) {
