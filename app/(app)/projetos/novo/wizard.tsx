@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -79,6 +79,31 @@ export function Wizard({
     setErrorMsg(null);
   }
 
+  // Recarrega modelos sempre que o produto mudar (cobre o caso do usuario pular
+  // direto pro Step 4 via stepper sem passar pelo saveAndAdvance do Step 3).
+  useEffect(() => {
+    let cancelled = false;
+    async function loadModels() {
+      if (!data.productId) {
+        setCurrentModels([]);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/product-models?productId=${data.productId}`);
+        if (res.ok) {
+          const rows = await res.json();
+          if (!cancelled) setCurrentModels(rows);
+        }
+      } catch (err) {
+        console.error('[wizard] loadModels failed', err);
+      }
+    }
+    loadModels();
+    return () => {
+      cancelled = true;
+    };
+  }, [data.productId]);
+
   function saveAndAdvance(nextStep: number, extra?: Partial<WizardData>) {
     const merged = { ...data, ...extra };
     setData(merged);
@@ -100,20 +125,16 @@ export function Wizard({
           opening: merged.opening,
         });
         if (extra?.productId && extra.productId !== data.productId) {
-          // Recarrega modelos se mudou produto
+          // Recarrega modelos se mudou produto (o useEffect em data.productId
+          // ja cuida do caso geral; isto e so uma otimizacao para adiantar)
           try {
             const res = await fetch(`/api/product-models?productId=${extra.productId}`);
-            console.log('[wizard] product-models fetch:', res.status, res.url);
             if (res.ok) {
               const rows = await res.json();
-              console.log('[wizard] product-models rows:', rows.length);
               setCurrentModels(rows);
-            } else {
-              const errText = await res.text();
-              console.error('[wizard] product-models error body:', errText);
             }
-          } catch (fetchErr: any) {
-            console.error('[wizard] product-models fetch failed:', fetchErr?.message);
+          } catch {
+            // silencioso
           }
         }
         setStep(nextStep);
