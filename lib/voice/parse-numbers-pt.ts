@@ -21,9 +21,12 @@ const TEENS: Record<string, number> = {
 
 const TENS: Record<string, number> = {
   vinte: 20, trinta: 30, quarenta: 40,
-  cinquenta: 50, cinquenta: 50, // tolerar ambas as formas
+  cinquenta: 50,
   sessenta: 60, setenta: 70, oitenta: 80, noventa: 90,
 };
+
+// A normalizacao remove acentos, entao "cinqUenta"/"cinq\u00fcenta"/"cinquenta"
+// viram todos "cinquenta" (cobre todas as variacoes).
 
 const HUNDREDS: Record<string, number> = {
   cem: 100, cento: 100,
